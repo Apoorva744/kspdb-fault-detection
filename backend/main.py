@@ -1,6 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
 from contextlib import asynccontextmanager
+from starlette.middleware.base import BaseHTTPMiddleware
 from database import engine, Base
 from routers import telemetry, poles, tickets, simulator, scheduled_outages
 import logging
@@ -8,6 +10,15 @@ import os
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+class CORSMiddlewareManual(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+        response.headers["Access-Control-Allow-Headers"] = "*"
+        return response
 
 
 @asynccontextmanager
@@ -35,31 +46,14 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["https://kspdb-frontend-1gj3.onrender.com", "http://localhost:3000", "*"],
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
-    expose_headers=["*"],
-)
+# Add manual CORS middleware
+app.add_middleware(CORSMiddlewareManual)
 
 app.include_router(telemetry.router, prefix="/api/telemetry", tags=["telemetry"])
 app.include_router(poles.router, prefix="/api/poles", tags=["poles"])
 app.include_router(tickets.router, prefix="/api/tickets", tags=["tickets"])
 app.include_router(simulator.router, prefix="/api/simulator", tags=["simulator"])
 app.include_router(scheduled_outages.router, prefix="/api/scheduled-outages", tags=["scheduled-outages"])
-
-
-@app.options("/{path:path}")
-async def options_handler(path: str):
-    """Handle OPTIONS requests for CORS preflight."""
-    from fastapi.responses import Response
-    response = Response()
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "*"
-    return response
 
 
 @app.get("/")
