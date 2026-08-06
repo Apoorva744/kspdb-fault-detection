@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from database import engine, Base
 from routers import telemetry, poles, tickets, simulator, scheduled_outages
 import logging
+import os
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
