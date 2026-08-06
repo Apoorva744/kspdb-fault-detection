@@ -16,11 +16,12 @@ async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
     logger.info("Database tables created")
     
-    # Seed database with initial data
-    logger.info("Seeding database...")
-    from seed import seed_database
-    seed_database()
-    logger.info("Database seeding complete")
+    # Seed database with initial data (only in development)
+    if os.getenv("ENVIRONMENT") == "development":
+        logger.info("Seeding database...")
+        from seed import seed_database
+        seed_database()
+        logger.info("Database seeding complete")
     
     yield
     # Shutdown
