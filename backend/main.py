@@ -51,6 +51,17 @@ app.include_router(simulator.router, prefix="/api/simulator", tags=["simulator"]
 app.include_router(scheduled_outages.router, prefix="/api/scheduled-outages", tags=["scheduled-outages"])
 
 
+@app.options("/{path:path}")
+async def options_handler(path: str):
+    """Handle OPTIONS requests for CORS preflight."""
+    from fastapi.responses import Response
+    response = Response()
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+    return response
+
+
 @app.get("/")
 async def root():
     return {
