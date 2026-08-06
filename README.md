@@ -23,7 +23,11 @@ The system will:
 
 ## Live Demo
 
-**Public URL:** [To be added before submission]
+**Frontend URL:** https://kspdb-frontend-1gj3.onrender.com
+
+**Backend URL:** https://kspdb-backend1.onrender.com
+
+**GitHub Repository:** https://github.com/Apoorva744/kspdb-fault-detection
 
 **Demo Video:** [To be added before submission]
 
