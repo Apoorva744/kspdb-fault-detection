@@ -66,3 +66,14 @@ async def reset_simulator(db: Session = Depends(get_db)):
     result = await simulator.reset(db)
     logger.info("Simulator reset")
     return result
+
+
+@router.get("/valid-poles")
+async def get_valid_poles(db: Session = Depends(get_db)):
+    """Get a sample of valid pole IDs for fault injection."""
+    poles = db.query(Pole).limit(20).all()
+    return {
+        "sample_pole_ids": [pole.pole_id for pole in poles],
+        "total_poles": db.query(Pole).count(),
+        "message": "Use these pole IDs for fault injection"
+    }
