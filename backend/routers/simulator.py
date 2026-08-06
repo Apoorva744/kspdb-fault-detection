@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from schemas import FaultInjection, NoiseInjection
 from services.simulator import FaultSimulator
+from models import Pole
 import logging
 
 router = APIRouter()
