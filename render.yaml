@@ -2,8 +2,8 @@ services:
   - type: web
     name: kspdb-backend
     env: python
-    buildCommand: cd backend && pip install -r requirements.txt
-    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -13,18 +13,6 @@ services:
         value: production
       - key: PORT
         value: 8000
-
-  - type: web
-    name: kspdb-frontend
-    env: node
-    buildCommand: cd frontend && npm install && npm run build
-    startCommand: cd frontend && npm install -g serve && serve -s dist -l $PORT
-    envVars:
-      - key: VITE_API_URL
-        fromService:
-          type: web
-          name: kspdb-backend
-          property: host
 
 databases:
   - name: kspdb-db
