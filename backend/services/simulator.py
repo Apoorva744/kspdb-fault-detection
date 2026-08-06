@@ -204,8 +204,10 @@ class FaultSimulator:
         start_pole = db.query(Pole).filter(Pole.pole_id == fault.start_pole_id).first()
         end_pole = db.query(Pole).filter(Pole.pole_id == fault.end_pole_id).first()
         
-        if not start_pole or not end_pole:
-            raise ValueError("Invalid pole IDs for span fault")
+        if not start_pole:
+            raise ValueError(f"Start pole ID '{fault.start_pole_id}' not found in database")
+        if not end_pole:
+            raise ValueError(f"End pole ID '{fault.end_pole_id}' not found in database")
         
         # Find all downstream poles (simplified - in real system would use topology)
         downstream_poles = db.query(Pole).filter(
