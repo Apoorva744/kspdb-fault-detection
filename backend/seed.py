@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def seed_database():
+async def seed_database():
     """Seed the database with initial data."""
     db = SessionLocal()
     
@@ -21,10 +21,9 @@ def seed_database():
         logger.info("Seeding database with synthetic network...")
         
         simulator = FaultSimulator()
-        import asyncio
         
         # Generate network
-        result = asyncio.run(simulator.generate_network(num_transformers=20, poles_per_dt=70, db=db))
+        result = await simulator.generate_network(num_transformers=20, poles_per_dt=70, db=db)
         logger.info(f"Generated network: {result}")
         
         # Seed scheduled outages
@@ -69,4 +68,5 @@ def seed_database():
 
 
 if __name__ == "__main__":
-    seed_database()
+    import asyncio
+    asyncio.run(seed_database())

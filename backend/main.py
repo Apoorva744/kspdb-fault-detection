@@ -20,7 +20,7 @@ async def lifespan(app: FastAPI):
     # Seed database with initial data
     logger.info("Seeding database...")
     from seed import seed_database
-    seed_database()
+    await seed_database()
     logger.info("Database seeding complete")
     
     yield
