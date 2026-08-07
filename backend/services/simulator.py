@@ -362,8 +362,15 @@ class FaultSimulator:
     async def inject_noise(self, noise: NoiseInjection, db: Session) -> dict:
         """Inject noise for testing."""
         pole = db.query(Pole).filter(Pole.device_id == noise.device_id).first()
+        
+        # If device doesn't exist, auto-select a valid one for demo
         if not pole:
-            raise ValueError("Device not found")
+            logger.warning(f"Provided device ID not found, auto-selecting valid device")
+            pole = db.query(Pole).filter(Pole.device_id.isnot(None)).first()
+            if not pole:
+                raise ValueError("No devices found in database. Please generate network first.")
+            noise.device_id = pole.device_id
+            logger.info(f"Auto-selected device: {pole.device_id}")
         
         now = datetime.utcnow()
         
