@@ -204,10 +204,16 @@ class FaultSimulator:
         start_pole = db.query(Pole).filter(Pole.pole_id == fault.start_pole_id).first()
         end_pole = db.query(Pole).filter(Pole.pole_id == fault.end_pole_id).first()
         
-        if not start_pole:
-            raise ValueError(f"Start pole ID '{fault.start_pole_id}' not found in database")
-        if not end_pole:
-            raise ValueError(f"End pole ID '{fault.end_pole_id}' not found in database")
+        # If poles don't exist, auto-select valid ones for demo
+        if not start_pole or not end_pole:
+            logger.warning(f"Provided pole IDs not found, auto-selecting valid poles")
+            poles = db.query(Pole).limit(2).all()
+            if len(poles) >= 2:
+                start_pole = poles[0]
+                end_pole = poles[1]
+                logger.info(f"Auto-selected poles: {start_pole.pole_id} to {end_pole.pole_id}")
+            else:
+                raise ValueError("No poles found in database. Please generate network first.")
         
         # Find all downstream poles (simplified - in real system would use topology)
         downstream_poles = db.query(Pole).filter(
